@@ -1,0 +1,67 @@
+# Snakemake working and log files
+.snakemake/
+*.snakemake.log
+*.snakemake.tmp
+*.snakemake_timestamp
+
+# Temporary or incomplete output files
+*.tmp
+*.temp
+*.bak
+*.log
+*.err
+*.out
+*.tsv.tmp
+*.csv.tmp
+*.lock
+
+# Snakemake cluster / job submission logs
+logs/
+
+# Conda environments created by Snakemake
+.snakemake/conda/
+.snakemake/metadata/
+.snakemake/scripts/
+
+# Data & Results (keep raw data out of git)
+data/
+results/
+models/
+output/
+intermediate/
+tmp/
+
+# (Optionally, keep small example data)
+!data/example*/**
+
+# Python & Jupyter
+__pycache__/
+*.py[cod]
+*.ipynb_checkpoints/
+venv/
+.env/
+.venv/
+.envrc
+*.egg-info/
+dist/
+build/
+
+# Conda & Environment Files
+*.conda
+*.yml.lock
+
+# OS & Editor junk
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.idea/
+.vscode/
+*.code-workspace
+
+# Other
+*.zip
+*.tar.gz
+*.bak
+*.old
+
