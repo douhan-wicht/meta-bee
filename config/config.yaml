@@ -1,0 +1,146 @@
+###########################################################################
+#  ██████╗ ██████╗ ███╗   ██╗███████╗██╗ ██████╗ 
+# ██╔════╝██╔═══██╗████╗  ██║██╔════╝██║██╔════╝ 
+# ██║     ██║   ██║██╔██╗ ██║█████╗  ██║██║  ███╗
+# ██║     ██║   ██║██║╚██╗██║██╔══╝  ██║██║   ██║
+# ╚██████╗╚██████╔╝██║ ╚████║██║     ██║╚██████╔╝
+#  ╚═════╝ ╚═════╝ ╚═╝  ╚═══╝╚═╝     ╚═╝ ╚═════╝ 
+#
+# Configuration file for the "foo-project".
+# This file contains project-wide settings, such as thresholds, variables, and other
+# parameters used in the Snakemake workflow.
+###########################################################################
+
+# Project name
+name: meta-bee
+
+# Annotation database path
+bakta_db: "data/bakta/db"
+
+# Reference genome information
+samples:
+  ESL0024:
+    completeness: 100.0
+    genus: Bartonella
+    species: apis
+    strain: PEB0149
+  ESL0094:
+    completeness: 98.78
+    genus: Bombilactobacillus
+    species: mellis
+    strain: Hon2N
+  ESL0142:
+    completeness: 98.87
+    genus: Gilliamella
+    species: apicola
+    strain: wkB1
+  ESL0172:
+    completeness: 98.87
+    genus: Gilliamella
+    species: apis
+    strain: ESL0172
+  ESL0177:
+    completeness: 98.31
+    genus: Gilliamella
+    species: apicola
+    strain: ESL0177
+  ESL0183:
+    completeness: 97.73
+    genus: Lactobacillus
+    species: helsingborgensis
+    strain: Bma5N
+  ESL0184:
+    completeness: 97.4
+    genus: Lactobacillus
+    species: melliventris
+    strain: Hma8N
+  ESL0186:
+    completeness: 97.4
+    genus: Lactobacillus
+    species: kullabergensis
+    strain: Biut2N
+  ESL0198:
+    completeness: 97.12
+    genus: Bifidobacterium
+    species: polysaccharolyticum
+    strain: ESL0198
+  ESL0199:
+    completeness: 97.12
+    genus: Bifidobacterium
+    species: asteroides
+    strain: ESL0199
+  ESL0284:
+    completeness: 99.0
+    genus: Commensalibacter
+    species: sp003202795
+    strain: ESL0284
+  ESL0309:
+    completeness: 98.87
+    genus: Gilliamella
+    species: apicola
+    strain: ESL0309
+  ESL0352:
+    completeness: 97.4
+    genus: Lactobacillus
+    species: kimbladii
+    strain: Hma2
+  ESL0672:
+    completeness: 99.57
+    genus: Snodgrassella
+    species: alvi
+    strain: wkB2
+  ESL0868:
+    completeness: 98.31
+    genus: Frischella
+    species: perrara
+    strain: PEB0191
+  ESL1028:
+    completeness: 98.95
+    genus: Bombilactobacillus
+    species: mellifer
+    strain: Bin4
+  ESL1056:
+    completeness: 97.18
+    genus: Bifidobacterium
+    species: asteroides
+    strain: Bin7N
+  ESL1057:
+    completeness: 97.18
+    genus: Bifidobacterium
+    species: choladohabitans
+    strain: ESL1057
+  ESL1062:
+    completeness: 97.41
+    genus: Bifidobacterium
+    species: mizhiense
+    strain: ESL1062
+  ESL1083:
+    completeness: 97.64
+    genus: Bifidobacterium
+    species: apousia
+    strain: ESL1083
+  ESL1291:
+    completeness: 96.31
+    genus: Bifidobacterium
+    species: indicum
+    strain: LMG 11587
+  ESL1292:
+    completeness: 97.64
+    genus: Bifidobacterium
+    species: asteroides
+    strain: LMG 10735
+  ESL1293:
+    completeness: 97.4
+    genus: Lactobacillus
+    species: huangpiensis
+    strain: LMG 32144
+  ESL1295:
+    completeness: 98.87
+    genus: Gilliamella
+    species: apis
+    strain: LMG 30293
+  ESL1297:
+    completeness: 97.4
+    genus: Lactobacillus
+    species: apis
+    strain: LMG 26964

@@ -1,0 +1,16 @@
+# workflow/snakefile
+
+# Project wide configuration
+configfile: "config/config.yaml"
+
+# Local rules
+localrules:
+
+# Other rules
+include: "rules/annotation.smk"
+
+# Master rule to produce all the final output files
+rule all:
+    input:
+        # Annotation using Bakta
+        expand("results/annotation/{sample}/{sample}.gff3", sample=list(config["samples"].keys()))
