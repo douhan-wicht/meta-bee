@@ -64,4 +64,5 @@ Thumbs.db
 *.tar.gz
 *.bak
 *.old
+gurobi.log
 
