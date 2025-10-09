@@ -17,6 +17,9 @@ name: meta-bee
 # Annotation database path
 bakta_db: "data/bakta/db"
 
+# RAVEN toolbox path
+raven_path: "/home/omarkeshk/Documents/MATLAB/RAVEN"
+
 # Reference genome information
 samples:
   ESL0024:
@@ -24,123 +27,173 @@ samples:
     genus: Bartonella
     species: apis
     strain: PEB0149
+    kegg_code: bapi
+    kegg_precision: species
   ESL0094:
     completeness: 98.78
     genus: Bombilactobacillus
     species: mellis
     strain: Hon2N
+    kegg_code: lbm
+    kegg_precision: genus
   ESL0142:
     completeness: 98.87
     genus: Gilliamella
     species: apicola
     strain: wkB1
+    kegg_code: gap
+    kegg_precision: strain
   ESL0172:
     completeness: 98.87
     genus: Gilliamella
     species: apis
     strain: ESL0172
+    kegg_code: gaq
+    kegg_precision: species
   ESL0177:
     completeness: 98.31
     genus: Gilliamella
     species: apicola
     strain: ESL0177
+    kegg_code: gap
+    kegg_precision: species
   ESL0183:
     completeness: 97.73
     genus: Lactobacillus
     species: helsingborgensis
     strain: Bma5N
+    kegg_code: lhs
+    kegg_precision: species
   ESL0184:
     completeness: 97.4
     genus: Lactobacillus
     species: melliventris
     strain: Hma8N
+    kegg_code: lapi
+    kegg_precision: genus
   ESL0186:
     completeness: 97.4
     genus: Lactobacillus
     species: kullabergensis
     strain: Biut2N
+    kegg_code: lkl
+    kegg_precision: species
   ESL0198:
     completeness: 97.12
     genus: Bifidobacterium
     species: polysaccharolyticum
     strain: ESL0198
+    kegg_code: bla
+    kegg_precision: genus
   ESL0199:
     completeness: 97.12
     genus: Bifidobacterium
     species: asteroides
     strain: ESL0199
+    kegg_code: bast
+    kegg_precision: species
   ESL0284:
     completeness: 99.0
     genus: Commensalibacter
-    species: sp003202795
+    species: melissae
     strain: ESL0284
+    kegg_code: comm
+    kegg_precision: strain
   ESL0309:
     completeness: 98.87
     genus: Gilliamella
     species: apicola
     strain: ESL0309
+    kegg_code: gap
+    kegg_precision: species
   ESL0352:
     completeness: 97.4
     genus: Lactobacillus
     species: kimbladii
     strain: Hma2
+    kegg_code: lapi
+    kegg_precision: genus
   ESL0672:
     completeness: 99.57
     genus: Snodgrassella
     species: alvi
     strain: wkB2
+    kegg_code: salv
+    kegg_precision: strain
   ESL0868:
     completeness: 98.31
     genus: Frischella
     species: perrara
     strain: PEB0191
+    kegg_code: fpp
+    kegg_precision: strain
   ESL1028:
     completeness: 98.95
     genus: Bombilactobacillus
     species: mellifer
     strain: Bin4
+    kegg_code: lbm
+    kegg_precision: genus
   ESL1056:
     completeness: 97.18
     genus: Bifidobacterium
     species: asteroides
     strain: Bin7N
+    kegg_code: bast
+    kegg_precision: species
   ESL1057:
     completeness: 97.18
     genus: Bifidobacterium
     species: choladohabitans
     strain: ESL1057
+    kegg_code: bast
+    kegg_precision: genus
   ESL1062:
     completeness: 97.41
     genus: Bifidobacterium
     species: mizhiense
     strain: ESL1062
+    kegg_code: bast
+    kegg_precision: genus
   ESL1083:
     completeness: 97.64
     genus: Bifidobacterium
     species: apousia
     strain: ESL1083
+    kegg_code: bast
+    kegg_precision: genus
   ESL1291:
     completeness: 96.31
     genus: Bifidobacterium
     species: indicum
-    strain: LMG 11587
+    strain: LMG11587
+    kegg_code: bii
+    kegg_precision: strain
   ESL1292:
     completeness: 97.64
     genus: Bifidobacterium
     species: asteroides
-    strain: LMG 10735
+    strain: LMG10735
+    kegg_code: bast
+    kegg_precision: species
   ESL1293:
     completeness: 97.4
     genus: Lactobacillus
     species: huangpiensis
-    strain: LMG 32144
+    strain: LMG32144
+    kegg_code: lapi
+    kegg_precision: genus
   ESL1295:
     completeness: 98.87
     genus: Gilliamella
     species: apis
-    strain: LMG 30293
+    strain: LMG30293
+    kegg_code: gaq
+    kegg_precision: species
   ESL1297:
     completeness: 97.4
     genus: Lactobacillus
     species: apis
-    strain: LMG 26964
+    strain: LMG26964
+    kegg_code: lapi
+    kegg_precision: species
