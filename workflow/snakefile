@@ -8,9 +8,13 @@ localrules:
 
 # Other rules
 include: "rules/annotation.smk"
+include: "rules/reconstruction.smk"
 
 # Master rule to produce all the final output files
 rule all:
     input:
         # Annotation using Bakta
-        expand("results/annotation/{sample}/{sample}.gff3", sample=list(config["samples"].keys()))
+        expand("results/annotation/{sample}/{sample}.gff3", sample=list(config["samples"].keys())),
+        # Genome-scale metabolic model reconstruction using KEGG
+        expand("results/reconstruction/{sample}/{sample}_draftGEM.mat", sample=list(config["samples"].keys()))
+        
