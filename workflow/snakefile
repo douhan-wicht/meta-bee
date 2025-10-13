@@ -16,5 +16,7 @@ rule all:
         # Annotation using Bakta
         expand("results/annotation/{sample}/{sample}.gff3", sample=list(config["samples"].keys())),
         # Genome-scale metabolic model reconstruction using KEGG
-        expand("results/reconstruction/{sample}/{sample}_draftGEM.mat", sample=list(config["samples"].keys()))
+        expand("results/reconstruction/draft/{sample}/{sample}_draft.mat", sample=list(config["samples"].keys())),
+        expand("results/reconstruction/relaxed/{sample}/{sample}_relaxed.mat", sample=list(config["samples"].keys())),
+
         
