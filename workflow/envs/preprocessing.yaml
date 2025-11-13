@@ -1,0 +1,24 @@
+name: preprocessing
+channels:
+  - conda-forge
+  - bioconda
+  - r
+  - defaults
+dependencies:
+  # xlsx2tsv
+  - python=3.8
+  - numpy
+  - pandas
+  - openpyxl
+  # growthrates_easylinear
+  - r-base
+  - r-optparse
+  - r-ggplot2
+  - r-dplyr
+  - r-readr
+  - r-tibble
+  - r-purrr
+  # system compiler for CRAN packages
+  - make
+  - gcc
+  - gxx

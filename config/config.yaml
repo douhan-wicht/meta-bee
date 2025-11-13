@@ -20,6 +20,18 @@ bakta_db: "data/bakta/db"
 # RAVEN toolbox path
 raven_path: "/home/omarkeshk/Documents/MATLAB/RAVEN"
 
+# Growth rates experiences
+experiments:
+  20240126_anaerobic_10media: {}
+  20240126_microaerobic_10media: {}
+  20240215_anaerobic_M9_PYG_GMM_test: {}
+  20240215_M9_PYG_GMM_media_test_microaerobic: {}
+  20240318_BHI_GMM_PYG_anaerobic: {}
+  20240318_BHI_GMM_PYG_microaerobic: {}
+  20240503_anaerobic_BHI_GMM_PYG: {}
+  20240503_microaerobic_BHI_GMM_PYG: {}
+  20240514_anaerobic_sDMEM_all: {}
+
 # Reference genome information
 samples:
   ESL0024:
