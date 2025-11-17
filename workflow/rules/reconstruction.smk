@@ -53,3 +53,39 @@ rule relaxedGEMs:
         catch ME; disp(getReport(ME)); exit(1); end; exit;" \
         > {log.out} 2> {log.err}
         """
+
+rule extract_metrics_draft:
+    """Extract metrics from draft GEMs."""
+    input:
+        gems = expand("results/reconstruction/draft/{sample}/{sample}_draft.mat", sample=config["samples"].keys())
+    output:
+        metrics = "results/reconstruction/summary/draft_metrics.csv"
+    log:
+        out = "logs/reconstruction/extract_metrics_draft.out",
+        err = "logs/reconstruction/extract_metrics_draft.err"
+    conda:
+        "../envs/reconstruction.yaml"
+    shell:
+        """
+        python workflow/scripts/reconstruction/extract_metrics.py {input.gems} \
+            -o {output.metrics} \
+            > {log.out} 2> {log.err}
+        """
+
+rule extract_metrics_relaxed:
+    """Extract metrics from relaxed GEMs."""
+    input:
+        gems = expand("results/reconstruction/relaxed/{sample}/{sample}_relaxed.mat", sample=config["samples"].keys())
+    output:
+        metrics = "results/reconstruction/summary/relaxed_metrics.csv"
+    log:
+        out = "logs/reconstruction/extract_metrics_relaxed.out",
+        err = "logs/reconstruction/extract_metrics_relaxed.err"
+    conda:
+        "../envs/reconstruction.yaml"
+    shell:
+        """
+        python workflow/scripts/reconstruction/extract_metrics.py {input.gems} \
+            -o {output.metrics} \
+            > {log.out} 2> {log.err}
+        """

@@ -24,3 +24,5 @@ rule all:
         # Genome-scale metabolic model reconstruction using KEGG
         expand("results/reconstruction/draft/{sample}/{sample}_draft.mat", sample=list(config["samples"].keys())),
         expand("results/reconstruction/relaxed/{sample}/{sample}_relaxed.mat", sample=list(config["samples"].keys())),
+        "results/reconstruction/summary/draft_metrics.csv",
+        "results/reconstruction/summary/relaxed_metrics.csv",
