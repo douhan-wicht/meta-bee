@@ -4,21 +4,30 @@ channels:
   - bioconda
   - r
   - defaults
+
 dependencies:
-  # xlsx2tsv
-  - python=3.8
+  # ---- Python base ----
+  - python=3.12
   - numpy
   - pandas
+  - scipy
+  - statsmodels
+  - pip
+
+  # ---- For reading Excel ----
   - openpyxl
-  # growthrates_easylinear
+
+  # ---- R environment ----
   - r-base
   - r-optparse
+  - r-tidyverse
   - r-ggplot2
   - r-dplyr
   - r-readr
-  - r-tibble
+  - r-tidyr
   - r-purrr
-  # system compiler for CRAN packages
-  - make
-  - gcc
-  - gxx
+  - r-tibble
+  - r-stringr
+
+  # ---- Install AMiGA for growth analysis (correct package!) ----
+  - amiga

@@ -3,15 +3,16 @@
 #  Estimate growth parameters using growthrates::fit_easylinear()
 #  from an aggregated growth-data TSV file.
 #
-#  Now CLI-driven for Snakemake:
+#  CLI-driven for Snakemake:
 #    --input-tsv   path/to/growth-data.tsv
 #    --output-csv  path/to/growth_rates.csv
 #    --plot-dir    path/to/plots_root
-#    [--time-unit hours]   (minutes converted to this; default: hours)
+#    [--time-unit hours]
 #    [--h-window  8]
 #    [--quota     0.95]
 # ============================================================
 
+# --- Install required packages ---
 suppressPackageStartupMessages({
   library(optparse)
   library(dplyr)
@@ -66,6 +67,7 @@ dir.create(plot_root, showWarnings = FALSE, recursive = TRUE)
 # ---- read data ----
 df <- readr::read_tsv(input_file, show_col_types = FALSE)
 
+# --- check that the tsv follows the required GrowthRates guidelines ---
 required_cols <- c("species", "replicate", "media", "cond", "time", "value")
 if (!all(required_cols %in% names(df))) {
   stop("Input TSV must contain columns: ", paste(required_cols, collapse = ", "))
