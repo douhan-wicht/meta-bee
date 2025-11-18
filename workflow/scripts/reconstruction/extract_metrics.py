@@ -1,15 +1,13 @@
 #!/usr/bin/env python3
 """
 Extract summary metrics from RAVEN genome-scale metabolic models (.mat)
+AND the number of CDS from annotation .txt files,
 and write them to a CSV.
 
-Works both as:
-  - a standalone script:
-        python extract_gem_metrics.py models/*.mat -o gem_metrics.csv
-  - a Snakemake `script:`:
-        script: "workflow/scripts/extract_gem_metrics.py"
-    where snakemake.input = list of .mat files
-          snakemake.output[0] = output CSV path
+Snakemake mode:
+    input.mats: list of .mat files
+    input.cds: list of annotation .txt files
+    output[0] = output CSV
 """
 
 import argparse
@@ -21,83 +19,73 @@ import pandas as pd
 from scipy.io import loadmat
 import scipy.sparse as sp
 
-
 # ---------- helpers for RAVEN-style mixed cell arrays ----------
 
 def _non_empty_reaction_annotations(arr) -> int:
-    """
-    Count entries that have at least one non-empty string.
-    Handles RAVEN-style arrays where entries can be:
-      - string
-      - numpy array of strings
-      - empty arrays
-    """
     arr = np.atleast_1d(arr)
     n = 0
     for x in arr:
         if isinstance(x, np.ndarray):
             if x.size == 0:
                 continue
-            has_any = False
-            for y in x.ravel():
-                s = str(y).strip()
-                if s and s.lower() not in ("nan",):
-                    has_any = True
-                    break
-            if has_any:
+            if any(str(y).strip() not in ("", "nan") for y in x.ravel()):
                 n += 1
         else:
             s = str(x).strip()
-            if s and s.lower() not in ("nan",):
+            if s and s.lower() != "nan":
                 n += 1
     return n
 
-
 def _unique_strings_from_mixed(arr) -> set:
-    """Collect unique non-empty strings from mixed RAVEN-style arrays."""
     arr = np.atleast_1d(arr)
     unique = set()
     for x in arr:
         if isinstance(x, np.ndarray):
             for y in x.ravel():
                 s = str(y).strip()
-                if s and s.lower() not in ("nan",):
+                if s and s.lower() != "nan":
                     unique.add(s)
         else:
             s = str(x).strip()
-            if s and s.lower() not in ("nan",):
+            if s and s.lower() != "nan":
                 unique.add(s)
     return unique
 
+# ---------- extract CDS count from annotation .txt ----------
+
+def extract_cds_count(txt_path: pathlib.Path) -> int:
+    """
+    Extract 'number of CDS' from annotation summary file.
+    Looks for a line containing something like 'CDS: 2341' or 'Number of CDS = 2341'.
+    """
+    pattern = re.compile(r"(?:CDS|cds)[^\d]*(\d+)")
+    with open(txt_path, "r", encoding="utf-8") as f:
+        for line in f:
+            match = pattern.search(line)
+            if match:
+                return int(match.group(1))
+    return np.nan  # in case nothing matches
 
 # ---------- exchange / transport detection ----------
 
 def _detect_external_comps(model) -> set:
-    """
-    Heuristic: identify external compartments by ID or name.
-    Returns a set of compartment indices (1-based, as in RAVEN's metComps).
-    """
     if not hasattr(model, "comps") or not hasattr(model, "compNames"):
         return set()
 
     comp_ids = np.atleast_1d(model.comps)
     comp_names = np.atleast_1d(model.compNames)
 
-    external_idxs = []
+    ext = []
     for i, (cid, cname) in enumerate(zip(comp_ids, comp_names)):
-        cid_str = str(cid).lower()
-        cname_str = str(cname).lower()
+        cid = str(cid).lower()
+        cname = str(cname).lower()
 
-        # Name-based
-        if any(word in cname_str for word in
-               ["extracellular", "external", "periplasm", "outside", "boundary"]):
-            external_idxs.append(i + 1)  # MATLAB 1-based indices
-        # ID-based
-        elif cid_str in ("e", "e0", "extracellular"):
-            external_idxs.append(i + 1)
+        if any(term in cname for term in ["extracellular", "external", "periplasm", "outside"]):
+            ext.append(i + 1)
+        elif cid in ("e", "e0", "extracellular"):
+            ext.append(i + 1)
 
-    return set(external_idxs)
-
+    return set(ext)
 
 # ---------- core metrics computation ----------
 
@@ -106,10 +94,9 @@ def compute_metrics(model, mat_path: pathlib.Path):
 
     # file-level identifiers
     stats["file"] = str(mat_path)
-    stats["id"] = str(getattr(model, "id", ""))
-    stats["name"] = str(getattr(model, "name", ""))
+    stats["strain"] = mat_path.stem.split("_")[0]   # ESL0001_draft.mat → ESL0001
 
-    # basic sizes
+    # GEM structural info
     stats["n_rxns"] = int(getattr(model, "rxns").size)
     stats["n_mets"] = int(getattr(model, "mets").size)
     stats["n_genes"] = int(getattr(model, "genes", np.array([])).size)
@@ -117,157 +104,109 @@ def compute_metrics(model, mat_path: pathlib.Path):
     # reversibility
     if hasattr(model, "rev"):
         rev = np.asarray(model.rev).ravel().astype(int)
-        stats["n_rev"] = int(np.sum(rev == 1))
+        stats["n_rev"] = int((rev == 1).sum())
         stats["n_irrev"] = int(rev.size - stats["n_rev"])
-        stats["frac_rev"] = stats["n_rev"] / rev.size if rev.size > 0 else np.nan
+        stats["frac_rev"] = stats["n_rev"] / rev.size
     else:
         stats["n_rev"] = stats["n_irrev"] = stats["frac_rev"] = np.nan
 
-    # gene rules (grRules)
+    # gene rules
     if hasattr(model, "grRules"):
-        n_with_gr = _non_empty_reaction_annotations(model.grRules)
-        stats["n_rxns_with_gr"] = int(n_with_gr)
-        stats["frac_rxns_with_gr"] = (
-            n_with_gr / stats["n_rxns"] if stats["n_rxns"] > 0 else np.nan
-        )
+        n_with = _non_empty_reaction_annotations(model.grRules)
+        stats["n_rxns_with_gr"] = n_with
+        stats["frac_rxns_with_gr"] = n_with / stats["n_rxns"]
     else:
         stats["n_rxns_with_gr"] = stats["frac_rxns_with_gr"] = np.nan
 
-    # genes per reaction from rxnGeneMat
-    if hasattr(model, "rxnGeneMat"):
-        rg = model.rxnGeneMat
-        # scipy loads MATLAB sparse matrices as scipy.sparse.spmatrix
-        gene_counts = np.array((rg != 0).sum(axis=1)).ravel()
-        if gene_counts.size > 0:
-            stats["mean_genes_per_rxn"] = float(gene_counts.mean())
-            stats["median_genes_per_rxn"] = float(np.median(gene_counts))
-        else:
-            stats["mean_genes_per_rxn"] = stats["median_genes_per_rxn"] = np.nan
+    # EC numbers
+    if hasattr(model, "eccodes"):
+        n_with = _non_empty_reaction_annotations(model.eccodes)
+        stats["n_rxns_with_EC"] = n_with
+        stats["frac_rxns_with_EC"] = n_with / stats["n_rxns"]
     else:
-        stats["mean_genes_per_rxn"] = stats["median_genes_per_rxn"] = np.nan
+        stats["n_rxns_with_EC"] = stats["frac_rxns_with_EC"] = np.nan
 
     # subsystems
     if hasattr(model, "subSystems"):
-        n_with_ss = _non_empty_reaction_annotations(model.subSystems)
-        unique_ss = _unique_strings_from_mixed(model.subSystems)
-        stats["n_rxns_with_subsystem"] = int(n_with_ss)
-        stats["frac_rxns_with_subsystem"] = (
-            n_with_ss / stats["n_rxns"] if stats["n_rxns"] > 0 else np.nan
-        )
-        stats["n_unique_subsystems"] = len(unique_ss)
+        n_with = _non_empty_reaction_annotations(model.subSystems)
+        stats["n_rxns_with_subsystem"] = n_with
+        stats["frac_rxns_with_subsystem"] = n_with / stats["n_rxns"]
+        stats["n_unique_subsystems"] = len(_unique_strings_from_mixed(model.subSystems))
     else:
         stats["n_rxns_with_subsystem"] = stats["frac_rxns_with_subsystem"] = np.nan
         stats["n_unique_subsystems"] = np.nan
 
-    # EC numbers
-    if hasattr(model, "eccodes"):
-        n_with_EC = _non_empty_reaction_annotations(model.eccodes)
-        unique_ec = _unique_strings_from_mixed(model.eccodes)
-        stats["n_rxns_with_EC"] = int(n_with_EC)
-        stats["frac_rxns_with_EC"] = (
-            n_with_EC / stats["n_rxns"] if stats["n_rxns"] > 0 else np.nan
-        )
-        stats["n_unique_EC"] = len(unique_ec)
-    else:
-        stats["n_rxns_with_EC"] = stats["frac_rxns_with_EC"] = np.nan
-        stats["n_unique_EC"] = np.nan
-
-    # exchange / transport using S and metComps
-    S = getattr(model, "S")
-    if not isinstance(S, sp.spmatrix):
-        S = sp.csc_matrix(S)
-    else:
-        S = S.tocsc()
-
+    # exchange/transport
+    S = sp.csc_matrix(getattr(model, "S"))
     metComps = getattr(model, "metComps", None)
-    n_rxns = stats["n_rxns"]
-
-    external_comps = set()
-    if hasattr(model, "comps") and hasattr(model, "compNames") and hasattr(model, "metComps"):
-        external_comps = _detect_external_comps(model)
+    ext = _detect_external_comps(model)
 
     n_exch = 0
     n_trans = 0
 
-    for j in range(n_rxns):
-        start, end = S.indptr[j], S.indptr[j + 1]
-        rows = S.indices[start:end]
+    for j in range(stats["n_rxns"]):
+        rows = S.indices[S.indptr[j]:S.indptr[j+1]]
         if rows.size == 0:
             continue
 
-        # transport: metabolites from >= 2 different compartments
+        # transport
         if metComps is not None:
             comps = np.atleast_1d(metComps)[rows]
-            uniq_comps = set(int(c) for c in comps)
-            if len(uniq_comps) >= 2:
+            if len(set(int(c) for c in comps)) >= 2:
                 n_trans += 1
 
-        # exchange: single metabolite in an "external" compartment (heuristic)
-        if external_comps and metComps is not None and rows.size == 1:
+        # exchange
+        if rows.size == 1 and metComps is not None:
             comp = int(np.atleast_1d(metComps)[rows[0]])
-            if comp in external_comps:
+            if comp in ext:
                 n_exch += 1
 
-    stats["n_exchange_rxns"] = int(n_exch)
-    stats["frac_exchange_rxns"] = n_exch / n_rxns if n_rxns > 0 else np.nan
-    stats["n_transport_rxns"] = int(n_trans)
-    stats["frac_transport_rxns"] = n_trans / n_rxns if n_rxns > 0 else np.nan
+    stats["n_exchange_rxns"] = n_exch
+    stats["frac_exchange_rxns"] = n_exch / stats["n_rxns"]
+    stats["n_transport_rxns"] = n_trans
+    stats["frac_transport_rxns"] = n_trans / stats["n_rxns"]
 
     return stats
 
-
-# ---------- I/O wrappers ----------
+# ---------- Snakemake / CLI wrappers ----------
 
 def load_raven_model(mat_path: pathlib.Path):
-    """
-    Load a .mat file and return the first non-internal variable
-    (assumed to be the RAVEN model struct).
-    """
-    data = loadmat(mat_path, squeeze_me=True, struct_as_record=False)
-    model_key = next(k for k in data.keys() if not k.startswith("__"))
-    return data[model_key]
+    d = loadmat(mat_path, squeeze_me=True, struct_as_record=False)
+    key = next(k for k in d.keys() if not k.startswith("__"))
+    return d[key]
 
-
-def run(mat_paths, out_csv: pathlib.Path):
+def run(mat_paths, cds_paths, out_csv: pathlib.Path):
     rows = []
-    for p in mat_paths:
-        model = load_raven_model(p)
-        rows.append(compute_metrics(model, p))
+    for mat, cds in zip(mat_paths, cds_paths):
+        model = load_raven_model(mat)
+        stats = compute_metrics(model, mat)
+
+        # Add CDS count
+        stats["n_cds"] = extract_cds_count(cds)
+
+        rows.append(stats)
 
     df = pd.DataFrame(rows)
     df.to_csv(out_csv, index=False)
 
-
-# ---------- CLI entry point ----------
+# ---------- CLI entry ----------
 
 def _parse_args():
-    ap = argparse.ArgumentParser(
-        description="Extract metrics from RAVEN GEM .mat models into a CSV."
-    )
-    ap.add_argument(
-        "input",
-        nargs="+",
-        help="One or more .mat files (wildcards allowed if your shell supports them).",
-    )
-    ap.add_argument(
-        "-o",
-        "--output",
-        required=True,
-        help="Output CSV file.",
-    )
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--mat", nargs="+", required=True, help="MAT model files")
+    ap.add_argument("--cds", nargs="+", required=True, help="Annotation TXT files")
+    ap.add_argument("-o", "--output", required=True)
     return ap.parse_args()
 
-
 if __name__ == "__main__":
-    # Snakemake mode
     if "snakemake" in globals():
-        mat_paths = [pathlib.Path(p) for p in snakemake.input]  # type: ignore
-        out_csv = pathlib.Path(snakemake.output[0])             # type: ignore
-        run(mat_paths, out_csv)
+        mats = [pathlib.Path(p) for p in snakemake.input.mats]
+        cds = [pathlib.Path(p) for p in snakemake.input.cds]
+        out = pathlib.Path(snakemake.output[0])
+        run(mats, cds, out)
 
-    # Normal CLI mode
     else:
         args = _parse_args()
-        mat_paths = [pathlib.Path(p) for p in args.input]
-        out_csv = pathlib.Path(args.output)
-        run(mat_paths, out_csv)
+        mats = [pathlib.Path(p) for p in args.mat]
+        cds = [pathlib.Path(p) for p in args.cds]
+        run(mats, cds, pathlib.Path(args.output))
