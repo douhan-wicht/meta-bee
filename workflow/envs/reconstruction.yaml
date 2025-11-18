@@ -1,13 +1,12 @@
-name: preprocessing
+name: reconstruction
 channels:
   - conda-forge
   - bioconda
-  - r
   - defaults
 
 dependencies:
-  # ---- Python base ----
   - python=3.12
   - numpy
   - pandas
   - scipy
+  - tabulate

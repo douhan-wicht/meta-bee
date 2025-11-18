@@ -26,3 +26,5 @@ rule all:
         expand("results/reconstruction/relaxed/{sample}/{sample}_relaxed.mat", sample=list(config["samples"].keys())),
         "results/reconstruction/summary/draft_metrics.csv",
         "results/reconstruction/summary/relaxed_metrics.csv",
+        "results/reconstruction/summary/draft_statistics.md",
+        "results/reconstruction/summary/relaxed_statistics.md",

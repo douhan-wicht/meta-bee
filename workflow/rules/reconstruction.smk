@@ -10,7 +10,7 @@ rule draftGEMs:
     params:
         raven_path = config["raven_path"],
         kegg_code = lambda wc: config["samples"][wc.sample]["kegg_code"]
-    threads: 8
+    threads: 16
     shell:
         """
         # Create log and hmm directories if they don't exist
@@ -38,7 +38,7 @@ rule relaxedGEMs:
     params:
         raven_path = config["raven_path"],
         kegg_code = lambda wc: config["samples"][wc.sample]["kegg_code"]
-    threads: 8
+    threads: 16
     shell:
         """
         # Create log and hmm directories if they don't exist
@@ -57,7 +57,8 @@ rule relaxedGEMs:
 rule extract_metrics_draft:
     """Extract metrics from draft GEMs."""
     input:
-        gems = expand("results/reconstruction/draft/{sample}/{sample}_draft.mat", sample=config["samples"].keys())
+        gems = expand("results/reconstruction/draft/{sample}/{sample}_draft.mat", sample=config["samples"].keys()),
+        annotations = expand("results/annotation/{sample}/{sample}.txt", sample=config["samples"].keys())
     output:
         metrics = "results/reconstruction/summary/draft_metrics.csv"
     log:
@@ -67,7 +68,9 @@ rule extract_metrics_draft:
         "../envs/reconstruction.yaml"
     shell:
         """
-        python workflow/scripts/reconstruction/extract_metrics.py {input.gems} \
+        python workflow/scripts/reconstruction/extract_metrics.py \
+            --mat {input.gems} \
+            --cds {input.annotations} \
             -o {output.metrics} \
             > {log.out} 2> {log.err}
         """
@@ -75,7 +78,8 @@ rule extract_metrics_draft:
 rule extract_metrics_relaxed:
     """Extract metrics from relaxed GEMs."""
     input:
-        gems = expand("results/reconstruction/relaxed/{sample}/{sample}_relaxed.mat", sample=config["samples"].keys())
+        gems = expand("results/reconstruction/relaxed/{sample}/{sample}_relaxed.mat", sample=config["samples"].keys()),
+        annotations = expand("results/annotation/{sample}/{sample}.txt", sample=config["samples"].keys())
     output:
         metrics = "results/reconstruction/summary/relaxed_metrics.csv"
     log:
@@ -85,7 +89,45 @@ rule extract_metrics_relaxed:
         "../envs/reconstruction.yaml"
     shell:
         """
-        python workflow/scripts/reconstruction/extract_metrics.py {input.gems} \
+        python workflow/scripts/reconstruction/extract_metrics.py \
+            --mat {input.gems} \
+            --cds {input.annotations} \
             -o {output.metrics} \
+            > {log.out} 2> {log.err}
+        """
+
+rule model_statistics_draft:
+    """Displays reconstruction statistics (draft GEMs) and creates a markdown report to visualize them easily."""
+    input:
+        metrics = "results/reconstruction/summary/draft_metrics.csv"
+    output:
+        report = "results/reconstruction/summary/draft_statistics.md"
+    log:
+        out = "logs/reconstruction/model_statistics_draft.out",
+        err = "logs/reconstruction/model_statistics_draft.err",
+    conda:
+        "../envs/reconstruction.yaml"
+    shell:
+        """
+        python workflow/scripts/reconstruction/model_statistics.py {input.metrics} \
+            -o {output.report} \
+            > {log.out} 2> {log.err}
+        """
+
+rule model_statistics_relaxed:
+    """Displays reconstruction statistics (relaxed GEMs) and creates a markdown report to visualize them easily."""
+    input:
+        metrics = "results/reconstruction/summary/relaxed_metrics.csv"
+    output:
+        report = "results/reconstruction/summary/relaxed_statistics.md"
+    log:
+        out = "logs/reconstruction/model_statistics_relaxed.out",
+        err = "logs/reconstruction/model_statistics_relaxed.err",
+    conda:
+        "../envs/reconstruction.yaml"
+    shell:
+        """
+        python workflow/scripts/reconstruction/model_statistics.py {input.metrics} \
+            -o {output.report} \
             > {log.out} 2> {log.err}
         """
