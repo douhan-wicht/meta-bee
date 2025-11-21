@@ -16,7 +16,7 @@ While originally tailored to a **25-member synthetic bee gut community**, MetaBe
 
 ## ⚙️ Key Features
 
-- 🧩 **Automated GEM reconstruction** using tools like RAVEN 2.0 
+- 🧩 **Semi-automated GEM reconstruction** using tools like RAVEN 2.0 
 - 🔍 **Integrated genome annotation** via Bakta
 - 🧠 **Semi-automated curation** for improving model completeness and consistency using the NICEgame workflow 
 - 🌐 **Interaction analysis** to infer potential metabolic exchanges and dependencies
