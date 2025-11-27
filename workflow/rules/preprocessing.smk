@@ -28,7 +28,7 @@ rule xlsx2tsv:
 
 rule growth_easylinear:
     input:
-        tsv = "results/preprocessing/growth-data/plate-reader/growth-data.tsv"
+        tsv = rules.xlsx2tsv.output
     output:
         summary   = "results/preprocessing/growth-data/summary/growth_easylinear.csv",
         plots_dir = directory("results/preprocessing/growth-data/summary/growth_plots")
