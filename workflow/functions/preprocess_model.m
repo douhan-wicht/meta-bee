@@ -163,6 +163,8 @@ if ~isfield(tmp, "biomassEQN")
 end
 
 % If stoichiometry is missing, auto-generate it
+saveStoich = false;   % flag to save stoich back into BOF.mat
+
 if isfield(tmp, "stoich")
     stoich = tmp.stoich;
 else
@@ -170,6 +172,9 @@ else
     
     % Using the biomass equation (string) as input
     stoich = extract_stoichiometries({tmp.biomassEQN});
+    
+    % indicate that we should save it
+    saveStoich = true;
 end
 
 % --- Convert stoichiometry to numeric vector ---
@@ -177,6 +182,13 @@ try
     stoichVec = cell2mat(stoich);
 catch
     error("Stoichiometries could not be converted into numeric vector. Check BOF.mat formatting.");
+end
+
+% --- If generated stoich, save it back to BOF.mat ---
+if saveStoich
+    fprintf("Saving generated stoich into BOF.mat...\n");
+    tmp.stoich = stoich;
+    save(BOFfile, '-struct', 'tmp');   % overwrite file preserving other variables
 end
 
 % --- Add biomass reaction ---
