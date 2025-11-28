@@ -144,16 +144,43 @@ model = removeRxns(model, model.rxns(Generic));
 % =========================================================
 % Add biomass reaction
 % =========================================================
-load(fullfile(importsFolder,"BOF.mat"));
-model = addReaction(model,'Biomass_rxn','reactionFormula',char(biomassEQN), ...
-    'reversible',0,'lowerBound',0,'upperBound',50, ...
-    'subSystem','Biomass','stoichCoeffList',cell2mat(stoich));
 
-% % Replace generic quinone metabolite
-% GenericQRxns = findRxnsFromMets(model,'C00399_c');
-% model = changeRxnMets(model,'C00399_c','C17569_c',GenericQRxns);
+BOFfile = fullfile(importsFolder, "BOF.mat");
+tmp = load(BOFfile);
 
-model = changeObjective(model,{'Biomass_rxn'});
+% --- Check required variables ---
+if ~isfield(tmp, "biomassEQN")
+    error("BOF.mat does not contain variable 'biomassEQN'. Cannot add biomass reaction.");
+end
+
+% If STOICH is missing, auto-generate it
+if isfield(tmp, "stoich")
+    stoich = tmp.stoich;
+else
+    fprintf("No 'stoich' field found in BOF.mat — generating stoichiometries automatically...\n");
+    
+    % Using the biomass equation (string) as input
+    stoich = extract_stoichiometries({tmp.biomassEQN});
+end
+
+% --- Convert stoichiometry to numeric vector ---
+try
+    stoichVec = cell2mat(stoich);
+catch
+    error("Stoichiometries could not be converted into numeric vector. Check BOF.mat formatting.");
+end
+
+% --- Add biomass reaction ---
+model = addReaction(model, 'Biomass_rxn', ...
+    'reactionFormula', char(tmp.biomassEQN), ...
+    'reversible', 0, ...
+    'lowerBound', 0, ...
+    'upperBound', 50, ...
+    'subSystem', 'Biomass', ...
+    'stoichCoeffList', stoichVec);
+
+% --- Set objective ---
+model = changeObjective(model, {'Biomass_rxn'});
 
 % =========================================================
 % Add manually curated quinone reactions
