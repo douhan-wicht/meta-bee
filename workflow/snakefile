@@ -10,6 +10,7 @@ localrules:
 include: "rules/preprocessing.smk"
 include: "rules/annotation.smk"
 include: "rules/reconstruction.smk"
+include: "rules/modelProcessing.smk"
 
 # Master rule to produce all the final output files
 rule all:
@@ -34,4 +35,10 @@ rule all:
         "results/reconstruction/summary/draft_spontaneous_statistics.md",
         "results/reconstruction/summary/relaxed_statistics.md",
         "results/reconstruction/summary/relaxed_spontaneous_statistics.md",
+        # Model preprocessing
+        "data/matfiles/MyExchanges.mat",
+        expand("results/modelProcessing/draft/{sample}/{sample}_draft_preprocessed.mat", sample=list(config["samples"].keys())),
+        "results/modelProcessing/summary/draft_metrics.csv",
+        "results/modelProcessing/summary/draft_statistics.md"
+
         
