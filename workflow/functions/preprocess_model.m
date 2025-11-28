@@ -56,19 +56,28 @@ model.mets(f) = strcat(model.mets(f), '_c');
 load(fullfile(importsFolder,"MyExchanges.mat"));
 stoich = extract_stoichiometries(EXCFormula);
 
+% Exchange reactions
 for i = 1:length(EXC)
     model = addReaction(model, EXC{i}, 'reactionFormula', EXCFormula{i}, ...
         'reversible', 1, 'lowerBound', 0, 'upperBound', 50, ...
         'subSystem', 'Exchanges', 'stoichCoeffList', stoich{i});
 end
 
-% --- Transport from extracellular → cytoplasm
+% Transport from extracellular → cytoplasm
 stoich = extract_stoichiometries(ExtraTFormulas);
 for i = 1:length(ExtraT)
     model = addReaction(model, ExtraT{i}, 'reactionFormula', ExtraTFormulas{i}, ...
         'reversible', 1, 'lowerBound', -50, 'upperBound', 50, ...
         'subSystem', 'ExtracellularTransportToCytoplasm', 'stoichCoeffList', stoich{i});
 end
+
+% % Adding active transporters
+% stoich=extract_stoichiometries(ActiveTFormulas);
+% for i = 1:length(ActiveT)
+% model = addReaction(model,ActiveT{i},'reactionFormula',ActiveTFormulas{i,1},...
+%     'reversible',1,'lowerBound',Activelb(i),'upperBound',50,...
+%     'subSystem','ActiveTransport','stoichCoeffList',stoich{i});
+% end
 
 % =========================================================
 % Add ATP Maintenance Reaction
