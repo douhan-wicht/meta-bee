@@ -35,10 +35,35 @@ rule all:
         "results/reconstruction/summary/draft_spontaneous_statistics.md",
         "results/reconstruction/summary/relaxed_statistics.md",
         "results/reconstruction/summary/relaxed_spontaneous_statistics.md",
-        # Model preprocessing
-        "data/matfiles/MyExchanges.mat",
-        expand("results/modelProcessing/draft/{sample}/{sample}_draft_preprocessed.mat", sample=list(config["samples"].keys())),
+        # ───────────────────────────────────────────────
+        # PREPROCESSED MODELS
+        # ───────────────────────────────────────────────
+        expand("results/modelProcessing/draft/{sample}/{sample}_draft_preprocessed.mat",
+            sample=config["samples"].keys()),
+
+        expand("results/modelProcessing/draft_spontaneous/{sample}/{sample}_draft_spontaneous_preprocessed.mat",
+            sample=config["samples"].keys()),
+
+        expand("results/modelProcessing/relaxed/{sample}/{sample}_relaxed_preprocessed.mat",
+            sample=config["samples"].keys()),
+
+        expand("results/modelProcessing/relaxed_spontaneous/{sample}/{sample}_relaxed_spontaneous_preprocessed.mat",
+            sample=config["samples"].keys()),
+
+        # ───────────────────────────────────────────────
+        # PREPROCESSED MODELS METRICS
+        # ───────────────────────────────────────────────
         "results/modelProcessing/summary/draft_metrics.csv",
-        "results/modelProcessing/summary/draft_statistics.md"
+        "results/modelProcessing/summary/draft_spontaneous_metrics.csv",
+        "results/modelProcessing/summary/relaxed_metrics.csv",
+        "results/modelProcessing/summary/relaxed_spontaneous_metrics.csv",
+
+        # ───────────────────────────────────────────────
+        # PREPROCESSED MODELS STATISTICS
+        # ───────────────────────────────────────────────
+        "results/modelProcessing/summary/draft_statistics.md",
+        "results/modelProcessing/summary/draft_spontaneous_statistics.md",
+        "results/modelProcessing/summary/relaxed_statistics.md",
+        "results/modelProcessing/summary/relaxed_spontaneous_statistics.md",
 
         
