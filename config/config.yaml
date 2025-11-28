@@ -17,8 +17,21 @@ name: meta-bee
 # Annotation database path
 bakta_db: "data/bakta/db"
 
-# RAVEN toolbox path
+# Paths to MATLAB toolboxes
 raven_path: "/home/omarkeshk/Documents/MATLAB/RAVEN"
+cobra_path: "/home/omarkeshk/Documents/MATLAB/cobratoolbox"
+matTFA_path: "/home/omarkeshk/Documents/MATLAB/matTFA"
+
+# Paths to matlab functions
+matlab_func_path: "workflow/functions"
+
+# Path to matlab files
+matlab_folder_path: "data/matfiles"
+
+# Media list from which we add exchange reactions
+media_list:
+  - GMM
+  - DMEM
 
 # Growth rates experiences
 experiments:
