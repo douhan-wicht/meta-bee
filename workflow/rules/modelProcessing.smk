@@ -272,6 +272,8 @@ rule preprocess_models_relaxed_spontaneous:
     log:
         out = "logs/modelProcessing/relaxed_spontaneous/{sample}.out",
         err = "logs/modelProcessing/relaxed_spontaneous/{sample}.err"
+    benchmark:
+        "benchmarks/modelProcessing/preprocess_models_relaxed_spontaneous/{sample}.txt"
     params:
         cobra_path  = config["cobra_path"],
         matfiles    = config["matlab_folder_path"],
