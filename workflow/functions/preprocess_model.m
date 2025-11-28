@@ -227,14 +227,17 @@ model.ub(model.ub==1000) = 100;
 % =========================================================
 % FINAL MODEL OUTPUT
 % =========================================================
+
 % Ensure the directory exists
 saveDir = fileparts(savePath);
 if ~exist(saveDir, 'dir')
     mkdir(saveDir);
 end
 
-% Ensure the file ends with .mat
-[~,~,ext] = fileparts(savePath);
+% Extract name and extension
+[~, varName, ext] = fileparts(savePath);
+
+% Ensure extension is .mat
 if isempty(ext)
     savePath = strcat(savePath, '.mat');
 elseif ~strcmp(ext, '.mat')
@@ -248,7 +251,6 @@ dynamicVarName = matlab.lang.makeValidName(varName);
 eval([dynamicVarName ' = model;']);
 
 % Save with dynamic variable name
-save(savePath, dynamicVarName, '-v7.3');
+save(savePath, dynamicVarName);
 
 end
-
