@@ -63,12 +63,20 @@ function update_exchange_file(exchangesMat, savePath, varargin)
     EXC = [
         EXC;
         exc_names(:);   % EXC_BOTH_%s_e
-        tr_e_c_names(:) % T_e_to_c_%s_e
     ];
 
     EXCFormula = [
         EXCFormula;
         exc_rxns(:);    % %s_e ->
+    ];
+
+    ExtraT = [
+        ExtraT;
+        tr_e_c_names(:) % T_e_to_c_%s_e
+    ];
+
+    ExtraTFormulas = [
+        ExtraTFormulas;
         tr_e_c(:)       % %s_e <=> %s_c
     ];
 
