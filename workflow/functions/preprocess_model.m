@@ -241,9 +241,14 @@ elseif ~strcmp(ext, '.mat')
     error('The output file must have a .mat extension.');
 end
 
-% Save final model
-preprocessedModel = model;
-save(savePath, 'preprocessedModel');
+% Create dynamic variable name based on file name
+dynamicVarName = matlab.lang.makeValidName(varName);
+
+% Assign model to dynamically named variable
+eval([dynamicVarName ' = model;']);
+
+% Save with dynamic variable name
+save(savePath, dynamicVarName, '-v7.3');
 
 end
 
