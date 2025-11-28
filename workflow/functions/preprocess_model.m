@@ -153,7 +153,7 @@ if ~isfield(tmp, "biomassEQN")
     error("BOF.mat does not contain variable 'biomassEQN'. Cannot add biomass reaction.");
 end
 
-% If STOICH is missing, auto-generate it
+% If stoichiometry is missing, auto-generate it
 if isfield(tmp, "stoich")
     stoich = tmp.stoich;
 else
@@ -195,12 +195,11 @@ model = changeObjective(model, {'Biomass_rxn'});
 % =========================================================
 % Assign compartments
 % =========================================================
-model.comps = {'c'; 'p'; 'e'};
-model.compNames = {'Cytoplasm'; 'Periplasm'; 'Extracellular'};
+model.comps = {'c'; 'e'};
+model.compNames = {'Cytoplasm'; 'Extracellular'};
 
 f = contains(model.mets,'_c'); model.metComps(f) = 1; model.metCompSymbol(f) = {'c'};
-f = contains(model.mets,'_p'); model.metComps(f) = 2; model.metCompSymbol(f) = {'p'};
-f = contains(model.mets,'_e'); model.metComps(f) = 3; model.metCompSymbol(f) = {'e'};
+f = contains(model.mets,'_e'); model.metComps(f) = 2; model.metCompSymbol(f) = {'e'};
 
 % =========================================================
 % Cleanup fields & bounds
