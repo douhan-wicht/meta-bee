@@ -210,7 +210,7 @@ model.rxnECNumbers(len:length(model.rxns)) = {'NA'};
 
 model.CompartmentData = CompartmentData;
 
-model.metSEEDID = erase(model.mets, {'_c','_p','_e'});
+model.metSEEDID = erase(model.mets, {'_c','_e'});
 
 model.lb(model.lb==-1000) = -100;
 model.ub(model.ub==1000) = 100;
