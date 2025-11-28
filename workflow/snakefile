@@ -15,26 +15,43 @@ include: "rules/modelProcessing.smk"
 # Master rule to produce all the final output files
 rule all:
     input:
-        # Growth data preprocessing
+        # ───────────────────────────────────────────────
+        # GROWTH ASSAYS PROCESSING
+        # ───────────────────────────────────────────────
         "results/preprocessing/growth-data/plate-reader/growth-data.tsv",
         "results/preprocessing/growth-data/summary/growth_easylinear.csv",
         "results/preprocessing/growth-data/summary/growth_binary.csv",
         "results/preprocessing/growth-data/summary/growth_heatmap.png",
-        # Annotation using Bakta
+        
+        # ───────────────────────────────────────────────
+        # BAKTA ANNOTATIONS
+        # ───────────────────────────────────────────────
         expand("results/annotation/{sample}/{sample}.gff3", sample=list(config["samples"].keys())),
-        # Genome-scale metabolic model reconstruction using KEGG
+
+        # ───────────────────────────────────────────────
+        # DRAFT MODELS (RAVEN)
+        # ───────────────────────────────────────────────
         expand("results/reconstruction/draft/{sample}/{sample}_draft.mat", sample=list(config["samples"].keys())),
         expand("results/reconstruction/draft_spontaneous/{sample}/{sample}_draft_spontaneous.mat", sample=list(config["samples"].keys())),
         expand("results/reconstruction/relaxed/{sample}/{sample}_relaxed.mat", sample=list(config["samples"].keys())),
         expand("results/reconstruction/relaxed_spontaneous/{sample}/{sample}_relaxed_spontaneous.mat", sample=list(config["samples"].keys())),
+
+        # ───────────────────────────────────────────────
+        # PREPROCESSED MODELS
+        # ───────────────────────────────────────────────
         "results/reconstruction/summary/draft_metrics.csv",
         "results/reconstruction/summary/draft_spontaneous_metrics.csv",
         "results/reconstruction/summary/relaxed_metrics.csv",
         "results/reconstruction/summary/relaxed_spontaneous_metrics.csv",
+
+        # ───────────────────────────────────────────────
+        # PREPROCESSED MODELS
+        # ───────────────────────────────────────────────
         "results/reconstruction/summary/draft_statistics.md",
         "results/reconstruction/summary/draft_spontaneous_statistics.md",
         "results/reconstruction/summary/relaxed_statistics.md",
         "results/reconstruction/summary/relaxed_spontaneous_statistics.md",
+
         # ───────────────────────────────────────────────
         # PREPROCESSED MODELS
         # ───────────────────────────────────────────────
@@ -65,5 +82,3 @@ rule all:
         "results/modelProcessing/summary/draft_spontaneous_statistics.md",
         "results/modelProcessing/summary/relaxed_statistics.md",
         "results/modelProcessing/summary/relaxed_spontaneous_statistics.md",
-
-        
