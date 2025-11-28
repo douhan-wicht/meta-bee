@@ -30,6 +30,7 @@ models/
 output/
 intermediate/
 tmp/
+benchmarks/
 
 # (Optionally, keep small example data)
 !data/example*/**
